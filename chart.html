@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relationship Flowchart</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #ffe5e5;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #ff4d4d;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+    .flowchart-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .question {
+      margin: 20px 0;
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #ff4d4d;
+    }
+    button {
+      background-color: #ff8080;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #ff6666;
+    }
+    input {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 90%;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .hidden {
+      display: none;
+    }
+    .end-results {
+      text-align: left;
+    }
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .flowchart-item {
+      background-color: #ffeeee;
+      border: 2px solid #ff4d4d;
+      border-radius: 5px;
+      padding: 10px 15px;
+      margin: 10px 0;
+      width: 90%;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Relationship Flowchart</h1>
+  <div class="flowchart-container">
+    <div id="q1" class="question-box">
+      <p class="question">Do you have feelings for me?</p>
+      <button onclick="recordAnswer('q1', 'Yes')">Yes</button>
+      <button onclick="recordAnswer('q1', 'No')">No</button>
+    </div>
+    <div id="q2" class="question-box hidden">
+      <p class="question">Do you think we could have a future together?</p>
+      <button onclick="recordAnswer('q2', 'Yes')">Yes</button>
+      <button onclick="recordAnswer('q2', 'No')">No</button>
+    </div>
+    <div id="q3" class="question-box hidden">
+      <p class="question">Do you feel there is something that could be changed between us?</p>
+      <button onclick="recordAnswer('q3', 'Yes')">Yes</button>
+      <button onclick="recordAnswer('q3', 'No')">No</button>
+    </div>
+    <div id="q4" class="question-box hidden">
+      <p class="question">Are you afraid of commitment right now? Why?</p>
+      <button onclick="recordAnswer('q4', 'Yes')">Yes</button>
+      <button onclick="recordAnswer('q4', 'No')">No</button>
+      <input id="q4-why" type="text" placeholder="If yes, why?">
+    </div>
+    <div id="q5" class="question-box hidden">
+      <p class="question">Do you see yourself able to commit in the upcoming months?</p>
+      <button onclick="recordAnswer('q5', 'Yes')">Yes</button>
+      <button onclick="recordAnswer('q5', 'No')">No</button>
+    </div>
+    <div id="q6" class="question-box hidden">
+      <p class="question">Is there anything we can do to improve how you feel about this?</p>
+      <button onclick="recordAnswer('q6', 'Yes')">Yes</button>
+      <button onclick="recordAnswer('q6', 'No')">No</button>
+      <input id="q6-why" type="text" placeholder="If yes, what?">
+    </div>
+    <div id="q7" class="question-box hidden">
+      <p class="question">Do you see yourself building a family?</p>
+      <button onclick="recordAnswer('q7', 'Yes')">Yes</button>
+      <button onclick="recordAnswer('q7', 'No')">No</button>
+    </div>
+    <div id="end" class="hidden">
+      <h2>Completion Date: <span id="completion-date"></span></h2>
+      <p>Here are your answers:</p>
+      <div class="flowchart" id="flowchart">
+        <!-- Flowchart items will go here -->
+      </div>
+      <button onclick="saveAnswers()">Save Answers</button>
+    </div>
+  </div>
+
+  <script>
+    const answers = {}; // Store answers for each question
+
+    function recordAnswer(questionId, answer) {
+      // Record the answer
+      answers[questionId] = answer;
+
+      // If the question has an input field for justification, record it
+      const input = document.getElementById(`${questionId}-why`);
+      if (input && input.value.trim() !== '') {
+        answers[`${questionId}-why`] = input.value.trim();
+      }
+
+      // Hide the current question
+      const current = document.getElementById(questionId);
+      current.classList.add('hidden');
+
+      // Show the next question or the summary
+      const nextQuestionId = `q${parseInt(questionId.slice(1)) + 1}`;
+      const nextQuestion = document.getElementById(nextQuestionId);
+      if (nextQuestion) {
+        nextQuestion.classList.remove('hidden');
+      } else {
+        showSummary();
+      }
+    }
+
+    function showSummary() {
+      const flowchartContainer = document.getElementById('flowchart');
+      for (const [question, answer] of Object.entries(answers)) {
+        const questionText = getQuestionText(question);
+        const flowchartItem = document.createElement('div');
+        flowchartItem.className = 'flowchart-item';
+        flowchartItem.textContent = `${questionText}: ${answer}`;
+        flowchartContainer.appendChild(flowchartItem);
+      }
+      document.getElementById('end').classList.remove('hidden');
+      document.getElementById('completion-date').textContent = new Date().toLocaleDateString();
+    }
+
+    function getQuestionText(questionId) {
+      const questions = {
+        q1: 'Do you have feelings for me?',
+        q2: 'Do you think we could have a future together?',
+        q3: 'Do you feel there is something that could be changed between us?',
+        q4: 'Are you afraid of commitment right now?',
+        'q4-why': 'If yes, why?',
+        q5: 'Do you see yourself able to commit in the upcoming months?',
+        q6: 'Is there anything we can do to improve how you feel about this?',
+        'q6-why': 'If yes, what?',
+        q7: 'Do you see yourself building a family?'
+      };
+      return questions[questionId] || questionId;
+    }
+
+    function saveAnswers() {
+      // Save answers to local storage
+      localStorage.setItem('relationshipAnswers', JSON.stringify(answers));
+      alert('Answers have been saved!');
+    }
+  </script>
+</body>
+</html>
